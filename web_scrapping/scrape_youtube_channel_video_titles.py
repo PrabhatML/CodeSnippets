@@ -19,9 +19,10 @@ def find_page(url_name):
     for path,directories,files in os.walk(os.getcwd()):
         for file in files:
             if fnmatch(file,url_name):
+                # If match is found with file name
                 file_path = os.path.join(path,file)
                 creation_time = ((time.time() - os.path.getctime(file_path)))/(3600)
-                print(creation_time)
+                # Check age of file and delete it incase file is older than UPDATE_FILE_HOUR
                 if creation_time > UPDATE_FILE_HOUR:
                     os.remove(file_path)
                     return False 
@@ -32,9 +33,13 @@ def find_page(url_name):
 def get_soup(url):
     url_name = urllib.parse.quote_plus(url) + ".html"
     url_name_location = find_page(url_name)
+
+    # If we already have page data
     if url_name_location:
         with open(url_name_location,'r') as f:
             soup = f.read()
+    
+    # Getting the page data is local machine dont have data
     else:
         r = requests.get(url)
         soup = BeautifulSoup(r.content,'html5lib').prettify()
